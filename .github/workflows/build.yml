@@ -1,0 +1,43 @@
+name: Build ESP32 Firmware
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 2.7
+      uses: actions/setup-python@v5
+      with:
+        python-version: '2.7'
+
+    - name: Install dependencies and ESP-IDF v3.3
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc git wget make libncurses-dev flex bison gperf python-serial
+        git clone -b v3.3.5 --recursive https://github.com || true
+        git clone -b v3.3.5 --recursive https://github.com
+        cd esp-idf
+        ./install.sh
+        
+    - name: Build Firmware
+      run: |
+        cd esp-idf
+        . ./export.sh
+        cd ..
+        make defconfig
+        make all
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-deauth-firmware
+        path: |
+          build/*.bin
