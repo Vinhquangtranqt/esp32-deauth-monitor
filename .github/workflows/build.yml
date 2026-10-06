@@ -11,12 +11,14 @@ jobs:
     container: espressif/idf:release-v3.3
 
     steps:
-    # Đổi từ @v4 xuống @v2 để tương thích với hệ điều hành cũ trong Docker
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
+    # Thay thế hoàn toàn actions/checkout bằng lệnh git clone thủ công
+    - name: Clone Repository Manually
+      run: |
+        git clone --recursive https://github.com project
+        
     - name: Build Firmware
       run: |
+        cd project
         . /opt/esp/idf/export.sh
         make defconfig
         make all
@@ -26,6 +28,6 @@ jobs:
       with:
         name: esp32-deauth-firmware
         path: |
-          build/esp32-deauth-monitor.bin
-          build/bootloader/bootloader.bin
-          build/partitions_singleapp.bin
+          project/build/esp32-deauth-monitor.bin
+          project/build/bootloader/bootloader.bin
+          project/build/partitions_singleapp.bin
