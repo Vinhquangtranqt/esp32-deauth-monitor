@@ -8,12 +8,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Sử dụng môi trường Docker chứa sẵn ESP-IDF v3.3 của Espressif
     container: espressif/idf:release-v3.3
 
     steps:
+    # Đổi từ @v4 xuống @v2 để tương thích với hệ điều hành cũ trong Docker
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
 
     - name: Build Firmware
       run: |
