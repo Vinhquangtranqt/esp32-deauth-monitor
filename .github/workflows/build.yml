@@ -7,31 +7,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    # Sử dụng môi trường Docker chứa sẵn ESP-IDF v3.3 của Espressif
+    container: espressif/idf:release-v3.3
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python 2.7
-      uses: actions/setup-python@v5
-      with:
-        python-version: '2.7'
-
-    - name: Install dependencies and ESP-IDF v3.3
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc git wget make libncurses-dev flex bison gperf python-serial
-        git clone -b v3.3.5 --recursive https://github.com || true
-        git clone -b v3.3.5 --recursive https://github.com
-        cd esp-idf
-        ./install.sh
-        
     - name: Build Firmware
       run: |
-        cd esp-idf
-        . ./export.sh
-        cd ..
+        . /opt/esp/idf/export.sh
         make defconfig
         make all
 
@@ -40,4 +26,6 @@ jobs:
       with:
         name: esp32-deauth-firmware
         path: |
-          build/*.bin
+          build/esp32-deauth-monitor.bin
+          build/bootloader/bootloader.bin
+          build/partitions_singleapp.bin
